@@ -1,8 +1,11 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Button from "./Button";
 import { TiLocation, TiLocationArrow } from "react-icons/ti";
 import { useGSAP } from "@gsap/react";
-import gsap from 'gsap';
+import { ScrollTrigger } from "gsap/all";
+import gsap from "gsap";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
@@ -16,6 +19,12 @@ const Hero = () => {
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (loadedVideos === totalVideos - 1) {
+      setIsLoading(false);
+    }
+  }, [loadedVideos]);
 
   const upcomingVideoIndex = (currentIndex % totalVideos) + 1;
 
@@ -73,6 +82,17 @@ const Hero = () => {
 
   return (
     <div className="relative h-dvh w-screen overflow-x-hidden">
+      {isLoading && (
+        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
+          {/* https://uiverse.io/G4b413l/tidy-walrus-92 */}
+          <div className="three-body">
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+          </div>
+        </div>
+      )}
+
       <div
         id="video-frame"
         className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75"
@@ -105,7 +125,9 @@ const Hero = () => {
             onLoadedData={handleVideoLoad}
           />
           <video
-            src={getVideoSrc(currentIndex === totalVideos - 1 ? 1 : currentIndex)}
+            src={getVideoSrc(
+              currentIndex === totalVideos - 1 ? 1 : currentIndex
+            )}
             autoPlay
             loop
             muted
@@ -129,7 +151,7 @@ const Hero = () => {
 
             <Button
               id="watch-trailer"
-              title="Watch Trailer"
+              title="Download CV"
               leftIcon={<TiLocationArrow />}
               containerClass="!bg-yellow-300 flex-center gap-1"
             />
